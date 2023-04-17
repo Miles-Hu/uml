@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!--<context:annotation-config />-->
+	<!--<context:component-scan base-package="com.demoioc.使用方法"/>-->
+	<context:spring-configured></context:spring-configured>
+	
+	<bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>userinfo.properties</value>
+				 <value>configure.properties</value>
+			</list>
+		</property>
+	</bean>   
+	
+	
+	
+	<!-- 1、构造函数注入 -->
+	<!-- 构造器参数类型匹配  -->
+	<bean id="user1" class="com.demoioc.使用方法.User" init-method="initUser">
+		<constructor-arg type="java.lang.String" value="${test.name}"></constructor-arg>
+		<constructor-arg type="int" value="23"></constructor-arg>
+	</bean>
+	
+	<!-- 构造参数索引  -->
+	<bean id="user2" class="com.demoioc.使用方法.User">
+		<constructor-arg index="0" value="tom"></constructor-arg>
+		<constructor-arg index="1" value="18"></constructor-arg>
+	</bean>
+
+	<!-- 2、setter方法注入 -->
+	<!-- 2.1 list -->
+	<bean id="company" class="com.demoioc.使用方法.demo.Company" >
+		<property name="name" value="demoioc"></property>
+		<property name="users">
+			<list>
+				<ref bean="user1"/>
+				<ref bean="user2"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 2.2 set -->
+	<bean id="department" class="com.demoioc.使用方法.demo.Department" >
+		<property name="name" value="CTCRM"></property>
+		<property name="users">
+			<set>
+				<ref bean="user1"/>
+				<ref bean="user2"/>
+			</set>
+		</property>
+	</bean>
+	
+	<!-- 2.3 properties -->
+	<bean id="properties" class="java.util.Properties">
+		<constructor-arg index="0">
+			<props>
+				<prop key="1">
+				</prop>
+				<prop key="2">smith</prop>
+			</props>
+		</constructor-arg>
+	</bean>
+	
+	<!-- 2.4 map -->
+	<bean id="userMap" class="com.demoioc.使用方法.UserMap">
+		<property name="map">
+			<map>
+				<entry key="smith" value-ref="user1"></entry>
+				<entry key="tom" value-ref="user2"></entry>
+			</map>
+		</property>
+	</bean>	
+	
+	<!-- 对SPRING的扩展：对实例扩展 -->
+	<bean class="com.demoioc.bean.postprocessor.MyTestBeanFactoryPostProcessor" id="test"/>
+	<!-- 对SPRING的扩展：对定义的扩展 -->
+	<bean id="user3" class="com.demoioc.使用方法.User">
+		<constructor-arg index="0" value="${name}"></constructor-arg>
+		<constructor-arg index="1" value="18"></constructor-arg>
+	</bean>
+	<!-- 对SPRING的扩展：对factoryBean的扩展 -->
+	<bean id="car" class="com.demoioc.bean.postprocessor.MyTestCarFactoryBean">
+          <property name="carInfo" value="123,wangtl_test"/> 
+	</bean> 
+</beans>

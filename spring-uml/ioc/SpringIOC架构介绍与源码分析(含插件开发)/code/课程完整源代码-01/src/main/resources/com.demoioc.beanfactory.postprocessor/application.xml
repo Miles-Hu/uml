@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+ <beans xmlns="http://www.springframework.org/schema/beans"  
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+        xsi:schemaLocation="  
+                 http://www.springframework.org/schema/beans  
+                 http://www.springframework.org/schema/beans/spring-beans.xsd">  
+     <bean id="bfpp" class="com.demoioc.beanfactory.postprocessor.ObscenityRemovingBeanFactoryPostProcessor">
+         <property name="obscenities">  
+             <set>  
+                 <value>winky</value>  
+                 <value>bum</value>  
+             </set>  
+         </property>  
+     </bean>  
+     <bean id="simpleBean" class="com.demoioc.beanfactory.postprocessor.SimpleBean">
+         <property name="connectionString" value="bollocks"/>  
+         <property name="password" value="winky"/>  
+         <property name="username" value="bum"/>  
+     </bean>                  
+       
+ </beans>  
