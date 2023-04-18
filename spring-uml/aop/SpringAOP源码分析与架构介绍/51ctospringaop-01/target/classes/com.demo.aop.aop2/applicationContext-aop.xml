@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="userDao" class="com.demo.aop.aop2.core.UserDaoImpl"></bean>
+
+	<bean id="userService" class="com.demo.aop.aop2.core.UserService">
+		<property name="userDao" ref="userDao"></property>
+	</bean>
+	
+	
+	<bean id="myAdvice4Srv" class="com.demo.aop.aop2.MyAdvice4Srv" />
+	<bean id="myAdvice4Dao" class="com.demo.aop.aop2.MyAdvice4Dao" />
+
+	
+<!-- 多个的话，最好用or 如果用||得转义了。 http://blog.csdn.net/super_scan/article/details/39005071 -->
+<!-- 		<aop:pointcut id="pc_dao_id" expression="execution(public * com.sitech..*Dao.*(..)) &amp;&amp; !execution(* com.sitech..*IbatisDao*(..)) &amp;&amp; !execution(* com.sitech..*ragonDao*(..))" /> -->
+	<aop:config>
+<!-- 		<aop:pointcut id="p_c_srv" expression="execution(public * com.demo.aop3..*Service.*(..))" /> -->
+<!-- 		<aop:pointcut id="p_c_dao" expression="execution(public * com.demo.aop3..*Dao*.searchAll(..))" /> -->
+<!-- 		<aop:advisor advice-ref="myAdvice4Srv" pointcut-ref="p_c_srv" /> -->
+<!-- 		<aop:advisor advice-ref="myAdvice4Dao" pointcut-ref="p_c_dao" /> -->
+		
+		<aop:pointcut id="p_c_all" expression="execution(public * com.demo.aop.aop2.core..*Dao*.searchAll(..)) or execution(public * com.demo.aop3..*Service*.searchAll(..)) " />
+		<aop:advisor advice-ref="myAdvice4Dao" pointcut-ref="p_c_all" />
+	</aop:config>
+
+
+	<aop:config>
+		<aop:pointcut id="p_c_all1" expression="execution(public * com.demo.aop.aop2.core..*Ser*.searchAll(..)) or execution(public * com.demo.aop3..*Service*.searchAll(..)) " />
+		<aop:advisor advice-ref="myAdvice4Srv" pointcut-ref="p_c_all1" />
+	</aop:config>
+	
+
+<!-- 	<aop:config> -->
+<!-- 		<aop:pointcut id="p_c_logPlatform" expression="execution(public * com.sitech.boss.rest..*Res*.*(..))  -->
+<!--   		 or execution(public * com.sitech.boss.uniimpl..*UniImpl.*(..))  -->
+<!--   		 and !execution(* com.sitech.boss..*ValidateService(..)) and !execution(* com.sitech.boss..*EsbCallService(..))" />   -->
+<!-- 		<aop:advisor advice-ref="logPlatformAdvice" pointcut-ref="p_c_logPlatform" /> -->
+<!-- 	</aop:config>	 -->
+<!-- 
+execution格式为 : 'execution(* com.xyz.myapp.service.*.*(..))'
+execution(modifiers-pattern? ret-type-pattern declaring-type-pattern? 方法名(方法参数)throws-pattern?)
+其中：ret-type-pattern和name pattern, and parameters pattern是必须的.
+ret-type-pattern:可以为*表示任何返回值,全路径的类名等.
+方法名:*代表所以,set*,代表以set开头的所有方法.
+方法参数:指定方法参数(声明的类型)  其中(..)代表所有参数,(*)代表一个参数,(*,String)代表第一个参数为任何值,第二个为String类型.
+ -->
+</beans>

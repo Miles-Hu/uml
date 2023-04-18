@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	<!-- 该配置隐匿注册了多个对注解进行解析处理的处理器 -->
+	<context:annotation-config/>
+	<!-- 
+		默认情况下，用@Component、 @Repository、@Service或 @Controller 
+		(或本身使用了@Component注解的自定义注解) 注解的类是唯一会被检测到的候选组件。
+		但是可以很方便地通过自定义过滤器来改变并扩展这一行为。 
+		可以用'component-scan'的include-filter或 exclude-filter子元素来进行添加。 
+		每个过滤器元素都要求有'type'和'expression'属性。
+	 -->
+	<context:component-scan base-package="com.demo.demo2"/>
+	
+</beans>

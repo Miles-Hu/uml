@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping default-lazy="true" auto-import="true">
+	<class name="com.demo.事务.jdbcIbatisHibernate.SysAdmin" table="sys_admin">
+		<id name="adminId" type="int" >
+			<column name="adminId" length="20" />
+		</id>
+		<property name="adminName" type="string">
+			<column name="admin_name" length="20" />
+		</property>
+		<property name="password" type="string">
+			<column name="password" length="20" />
+		</property>
+	</class>
+</hibernate-mapping>

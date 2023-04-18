@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	<context:component-scan base-package="multdatasource_jta"/>
+	
+	
+ 	<bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager"  init-method="init" destroy-method="close"> 
+           <property name="forceShutdown" value="true"/> 
+     </bean> 
+
+    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+           <property name="transactionTimeout" value="300"/> 
+     </bean>
+	
+	<!-- 配置JTA事务管理器, 并在管理器中使用上面所配置的JOTM -->
+	<bean id="txManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+		<property name="userTransaction" ref="atomikosUserTransaction" />
+		<property name="transactionManager" ref="atomikosTransactionManager" />
+		<property name="allowCustomIsolationLevels" value="true"/>      
+	</bean>
+	
+	<!-- 配置多个数据源 -->
+	<bean id="db_user" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
+		  <property name="uniqueResourceName"><value>mysql/user</value></property>
+          <!-- Set XADatasource class name-->  
+          <property name="xaDataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />
+          <property name="xaProperties">
+              <props>
+                  <prop key="user">root</prop>
+                  <prop key="password">mysql</prop>
+                  <prop key="url">jdbc:MySQL://localhost:3306/user</prop>
+              </props>
+          </property>
+          <!-- set properties for datasource connection pool -->  
+          <property name="poolSize" value="5" />
+          <!-- 管理 Connection 被占用的时间 -->
+          <!-- 如果不设置这个值，Atomikos使用默认的300秒(即5分钟)，那么在处理大批量数据读取的时候，一旦超过5分钟，就会抛出类似 Resultset is close 的错误 -->
+          <property name="reapTimeout"><value>20000</value></property>  		
+	</bean>
+
+	<bean id="db_log" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close">
+		<property name="uniqueResourceName"><value>mysql/log</value></property>
+          <!-- Set XADatasource class name-->  
+          <property name="xaDataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" />
+          <property name="xaProperties">
+              <props>
+                  <prop key="user">root</prop>
+                  <prop key="password">mysql</prop>
+                  <prop key="url">jdbc:MySQL://localhost:3306/log</prop>
+              </props>
+          </property>
+          <!-- set properties for datasource connection pool -->  
+          <property name="poolSize" value="5" />
+          <!-- 管理 Connection 被占用的时间 -->
+          <!-- 如果不设置这个值，Atomikos使用默认的300秒(即5分钟)，那么在处理大批量数据读取的时候，一旦超过5分钟，就会抛出类似 Resultset is close 的错误 -->
+          <property name="reapTimeout"><value>20000</value></property>  		
+	</bean>
+	
+	<!-- 根据不同的数据源配置两个jdbcTemplate -->
+	<bean id="jdbcTemplate_user" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="db_user" />
+	</bean>
+
+	<bean id="jdbcTemplate_log" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="db_log" />
+	</bean>
+
+	<!-- JTA事务传播特性 -->
+    <tx:advice id="txAdviceJTA" transaction-manager="txManager">
+        <tx:attributes>
+        	<tx:method name="save*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="Exception"/>
+        	<tx:method name="add*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="create*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="insert*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="del*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="Exception"/>
+            <tx:method name="update*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="Exception"/>
+        	<tx:method name="*" read-only="true"/> 
+        </tx:attributes>
+    </tx:advice>
+    
+    <!-- 如果没有以下AOP事务则SERVICE中两个DAO操作，第二个失败后，不会回滚第一个 -->
+    <aop:config>
+        <aop:advisor pointcut="execution(* multdatasource_jta.service..*(..))"   advice-ref="txAdviceJTA" />
+    </aop:config>
+</beans>  

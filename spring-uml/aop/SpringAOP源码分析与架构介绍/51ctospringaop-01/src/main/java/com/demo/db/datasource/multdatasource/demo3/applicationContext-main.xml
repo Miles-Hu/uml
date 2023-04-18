@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>   
+
+	<tx:annotation-driven transaction-manager="txManager"/>
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation">
+			<value>classpath:SqlMapConfig.xml</value>
+		</property>
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+	</bean>
+	<bean id="ibatisDao" class="multdatasource.demo3.IbatisDao">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClient" />
+		</property>
+	</bean>
+	
+
+	
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	  	<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* multdatasource.demo3.SysAdminServiceImpl.queryUserList1(..))"/>
+	</aop:config>
+	<tx:advice id="txAdvice" transaction-manager="txManager" >
+		<tx:attributes>
+<!-- 			<tx:method name="save2*" propagation="REQUIRED"/> -->
+<!-- 			<tx:method name="save*" propagation="REQUIRED"/> -->
+			<tx:method name="get*" propagation="NOT_SUPPORTED" read-only="true"/>
+			<tx:method name="del*" propagation="REQUIRES_NEW" rollback-for="Exception"/>
+
+			<tx:method name="query*" propagation="REQUIRED"/>
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"/>
+		</tx:attributes>
+	</tx:advice>	
+	
+	
+	<bean id="sysAdminService" class="multdatasource.demo3.SysAdminServiceImpl">
+	  	<property name="ibatisDao" ref="ibatisDao"/>
+<!-- 		<property name="jdbcTemplate" ref="jdbcTemplate"/> -->
+	</bean>
+	
+	
+	<!-- 开始-->
+	<bean id="myAdvice4ChgDatasource" class="multdatasource.demo3.MyAdvice4ChgDatasource" />
+	<aop:config>
+		<aop:pointcut id="p_c_srv" expression="execution(* multdatasource.demo3.SysAdminServiceImpl.queryUserList1(..))" />
+		<aop:advisor advice-ref="myAdvice4ChgDatasource" pointcut-ref="p_c_srv" />
+	</aop:config>		
+	<!-- 结束 -->	
+
+</beans>

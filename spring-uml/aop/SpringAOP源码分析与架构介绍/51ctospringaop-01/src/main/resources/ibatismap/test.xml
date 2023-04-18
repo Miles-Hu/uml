@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="test">	
+	
+	<typeAlias alias="sysadmin" type="multdatasource.demo2.SysAdmin" />
+
+
+	<delete id="del">
+		delete from sys_admin where adminId=1
+	</delete>
+	<update id="update">
+		update sys_admin set admin_name='wangtlc' where adminId=2
+	</update>
+	
+	<select id="queryUserList" resultClass="sysadmin">  
+	    select * from sys_admin  
+	</select>
+</sqlMap>

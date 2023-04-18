@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	<bean id="dinner" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces"><!-- 配置通知器Advisor -->
+			<value>com.demo.aop.aop1.IDinner</value>
+		</property>
+		<property name="interceptorNames">
+			<list>
+				<value>beforeDinnerAdvisor</value>
+				<value>afterDinnerAdvisor</value>
+			</list>
+		</property>
+		<property name="target">
+			<ref bean="dinnerTarget"></ref>
+		</property>
+	</bean>
+	
+	<bean id="beforeDinnerAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice" ref="beforeDinnerAdvice"></property>
+		<property name="pattern" value=".*IDinner.*method*.*"></property>
+	</bean>
+	<bean id="afterDinnerAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice" ref="afterDinnerAdvice"></property>
+		<property name="pattern" value=".*.*"></property>
+	</bean>
+
+	<bean id="beforeDinnerAdvice" class="com.demo.aop.aop1.BeforeAdvice"></bean>
+	<bean id="afterDinnerAdvice" class="com.demo.aop.aop1.AfterAdvice"></bean>
+
+	<bean id="dinnerTarget" class="com.demo.aop.aop1.ImplDinner"></bean>
+</beans>

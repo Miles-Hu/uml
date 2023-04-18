@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	
+	<bean id="mySrv" class="com.demo.aop.aop4.srv.MySrv"></bean>
+	<bean id="myAdvice" class="com.demo.aop.aop4.MyAdvice"></bean>
+
+	<aop:config>
+<!-- 调用方法一 -->
+		<aop:pointcut id="p_c_id" expression="execution(public * com.demo.aop.aop4.srv..*(..))" />
+<!-- 		<aop:advisor advice-ref="myAdvice" pointcut-ref="p_c_id" /> -->
+
+<!-- 或pointcut合并 -->
+<!-- 		<aop:advisor advice-ref="myAdvice" pointcut="execution(public * com.demo.aop.aop5标签.srv..*(..))"/> -->
+		
+		
+<!-- 调用方法二 -->
+		<aop:aspect id="myAspect" ref="myAdvice">
+			<aop:before method="beforeOur" pointcut-ref="p_c_id" />
+			<aop:after method="afterOur" pointcut-ref="p_c_id" />
+			<aop:around method="aroundOur" pointcut-ref="p_c_id" />
+		</aop:aspect>
+
+
+	</aop:config>
+<!-- 
+<aop:advisor>和<aop:aspect>有什么区别？
+1、Adivisor是一种特殊的Aspect
+2、区别：advisor只持有一个Pointcut和一个advice，而aspect可以多个pointcut和多个advice
+ -->
+</beans>

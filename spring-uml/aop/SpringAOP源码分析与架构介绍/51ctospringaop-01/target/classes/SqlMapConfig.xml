@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<sqlMap resource="ibatismap/test.xml" />
+<!-- 	<sqlMap resource="ibatismap/td_ptl_prod_fav.xml" />  -->
+<!-- 	<sqlMap resource="ibatismap/td_ptl_shop_fav.xml" />  -->
+<!-- 	<sqlMap resource="ibatismap/tw_servinvoke_log.xml" /> -->
+<!-- 	<sqlMap resource="ibatismap/tw_userlogin_log.xml" /> -->
+<!-- 	<sqlMap resource="ibatismap/tw_payprocess_log.xml" /> -->
+<!-- 	<sqlMap resource="ibatismap/tw_click_log.xml" /> -->
+<!-- 	<sqlMap resource="ibatismap/recordChangeSum.xml" /> -->
+<!-- 	<sqlMap resource="ibatismap/tw_useradvise_log.xml" /> -->
+</sqlMapConfig>

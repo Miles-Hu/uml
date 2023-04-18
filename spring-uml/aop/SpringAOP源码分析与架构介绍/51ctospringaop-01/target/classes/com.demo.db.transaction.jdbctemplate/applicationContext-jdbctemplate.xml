@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="org.gjt.mm.mysql.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+		<!-- 连接池启动时的初始值 -->
+		<property name="initialSize" value="1" />
+<!-- 		<property name="defaultAutoCommit">true</property> -->
+		<!-- 连接池的最大值 -->
+		<property name="maxActive" value="500" />
+		<!-- 最大空闲值.当经过一个高峰时间后，连接池可以慢慢将已经用不到的连接慢慢释放一部分，一直减少到maxIdle为止 -->
+		<property name="maxIdle" value="2" />
+		<!--  最小空闲值.当空闲的连接数少于阀值时，连接池就会预申请去一些连接，以免洪峰来时来不及申请 -->
+		<property name="minIdle" value="1" />
+	</bean>
+	
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	  	<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>   
+
+<!-- 	<tx:annotation-driven transaction-manager="txManager"/> -->
+
+	<bean id="sysAdminService" class="com.demo.db.transaction.jdbctemplate.SysAdminServiceImpl" >
+		<property name="jdbcTemplate" ref="jdbcTemplate"></property>
+	</bean>
+	
+	<aop:config>
+		<aop:advisor advice-ref="txAdvice" pointcut="execution(* com.demo.db.transaction.jdbctemplate.*.*(..))"/>
+	</aop:config>
+	<tx:advice id="txAdvice" transaction-manager="txManager" >
+		<tx:attributes>
+<!-- 			<tx:method name="save2*" propagation="REQUIRED"/> -->
+<!-- 			<tx:method name="save*" propagation="REQUIRED"/> -->
+			<tx:method name="get*" propagation="NOT_SUPPORTED" read-only="true"/>
+			<tx:method name="del*" propagation="REQUIRES_NEW" rollback-for="Exception"/>
+
+			<tx:method name="add*" propagation="REQUIRED"/>
+			<tx:method name="update*" propagation="REQUIRED" rollback-for="Exception"/>
+		</tx:attributes>
+	</tx:advice>	
+	
+</beans>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="aopDealer1" class="com.demo.aop.aop3.AopDealer1" />
+	<bean id="aopDealer2" class="com.demo.aop.aop3.AopDealer2" />
+	<bean id="mySrv" class="com.demo.aop.aop3.MySrv" />
+
+	<bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator" >
+			<property name="beanNames">
+				<list>
+					<value>*mySrv</value>
+				</list>
+			</property>
+			<property name="interceptorNames">
+				<list>
+					<value>aopDealer1</value>
+					<value>aopDealer2</value>
+				</list>
+			</property>
+		</bean>
+
+</beans>
